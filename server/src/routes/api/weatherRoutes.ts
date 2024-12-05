@@ -42,7 +42,7 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     // GET weather data from OpenWeather API
-    const apiKey = 'YOUR_OPENWEATHER_API_KEY';
+    const apiKey = '57723b411370adfe429910c98534b38e';
     const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=imperial&appid=${apiKey}`);
     const weatherData = response.data;
 
