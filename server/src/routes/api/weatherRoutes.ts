@@ -20,11 +20,11 @@ router.get('/history', async (_, res) => {
 });
 
 // API route to save city and fetch weather data
-router.post('/', async (req, res) => {
+router.post('/', async (req, res): Promise<void> => {
   const { cityName } = req.body;
 
   if (!cityName) {
-    return res.status(400).json({ error: 'City name is required.' });
+    res.status(400).json({ error: 'City name is required.' });
   }
 
   try {
@@ -35,9 +35,21 @@ router.post('/', async (req, res) => {
     // Generate a unique ID for the city
     const cityId = Date.now().toString();
 
-    // Fetch weather data from OpenWeather API using fetch
-    const weatherResponse = await fetch(
+    // Fetch location data to get latitude and longitude
+    const locationResponse = await fetch(
       `${apiBaseUrl}/data/2.5/weather?q=${cityName}&units=imperial&appid=${apiKey}`
+    );
+
+    if (!locationResponse.ok) {
+      throw new Error('Failed to fetch location data');
+    }
+
+    const locationData = await locationResponse.json();
+    const { lat, lon } = locationData.coord;
+
+    // Fetch detailed forecast data from OpenWeather API
+    const weatherResponse = await fetch(
+      `${apiBaseUrl}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`
     );
 
     if (!weatherResponse.ok) {
@@ -47,15 +59,37 @@ router.post('/', async (req, res) => {
     const weatherData = await weatherResponse.json();
 
     // Save city with weather data
-    const newCity = {
+    interface WeatherEntry {
+      dateTime: string;
+      temperature: number;
+      windSpeed: number;
+      humidity: number;
+      description: string;
+      icon: string;
+    }
+
+    interface CityWeather {
+      forecast: WeatherEntry[];
+    }
+
+    interface City {
+      id: string;
+      name: string;
+      weather: CityWeather;
+    }
+
+    const newCity: City = {
       id: cityId,
       name: cityName,
       weather: {
-        temperature: weatherData.main.temp,
-        windSpeed: weatherData.wind.speed,
-        humidity: weatherData.main.humidity,
-        description: weatherData.weather[0].description,
-        icon: weatherData.weather[0].icon
+        forecast: weatherData.list.map((entry: any): WeatherEntry => ({
+          dateTime: entry.dt_txt,
+          temperature: entry.main.temp,
+          windSpeed: entry.wind.speed,
+          humidity: entry.main.humidity,
+          description: entry.weather[0].description,
+          icon: entry.weather[0].icon
+        }))
       }
     };
 
@@ -64,10 +98,10 @@ router.post('/', async (req, res) => {
     // Write updated search history
     await fs.writeFile(searchHistoryPath, JSON.stringify(cities, null, 2));
 
-    return res.status(201).json(newCity);
+    res.status(201).json(newCity);
   } catch (err) {
     console.error('Error handling weather data request:', err);
-    return res.status(500).json({ error: 'Failed to save city or fetch weather data.' });
+    res.status(500).json({ error: 'Failed to save city or fetch weather data.' });
   }
 });
 
