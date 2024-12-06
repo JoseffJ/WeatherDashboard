@@ -55,10 +55,6 @@ class WeatherService {
     };
   }
 
-  // Method to build geocode query
-  private buildGeocodeQuery(): string {
-    return `${this.baseURL}/weather?q=${this.cityName}&appid=${this.apiKey}`;
-  }
 
   // Method to build weather query
   private buildWeatherQuery(coordinates: Coordinates): string {
@@ -94,7 +90,7 @@ class WeatherService {
   }
 
   // Method to build forecast array
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]): Weather[] {
+  private buildForecastArray(weatherData: any[]): Weather[] {
     return weatherData.map((day: any) => {
       return new Weather(
         day.temp.day,
@@ -113,7 +109,7 @@ class WeatherService {
       const coordinates = await this.fetchAndDestructureLocationData();
       const weatherData = await this.fetchWeatherData(coordinates);
       const currentWeather = this.parseCurrentWeather(weatherData);
-      const forecast = this.buildForecastArray(currentWeather, weatherData.daily);
+      const forecast = this.buildForecastArray(weatherData.daily);
       return { current: currentWeather, forecast };
     } catch (err) {
       console.error('Error getting weather for city:', err);
