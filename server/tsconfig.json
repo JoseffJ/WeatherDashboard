@@ -1,12 +1,16 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    /* Modules */
-    "rootDir": "src" /* Specify the root folder within your source files. */,
-
-    /* Emit */
-    "outDir": "dist" /* Specify an output folder for all emitted files. */
-    // "noEmitOnError": true /* Disable emitting files if any type checking errors are reported. */
+    "outDir": "./dist",             // Compiled output files go here
+    "rootDir": "./src",             // Input TypeScript files start here
+    "module": "NodeNext",           // Use Node.js ES module compatibility
+    "moduleResolution": "NodeNext", // Match module behavior with 'module'
+    "target": "ES2020",             // Use modern JavaScript (ES2020)
+    "esModuleInterop": true,        // Enable compatibility with CommonJS
+    "resolveJsonModule": true,      // Allow JSON imports
+    "allowSyntheticDefaultImports": true, // Simplify default import handling
+    "strict": true,                 // Enable strict type checking
+    "noEmitOnError": true           // Avoid emitting JS if there are TS errors
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts"],        // Include all .ts files in src
+  "exclude": ["node_modules"]        // Exclude node_modules to speed up compilation
 }

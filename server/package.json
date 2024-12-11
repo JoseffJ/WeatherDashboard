@@ -5,14 +5,17 @@
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "build": "npx tsc",
+    "build": "rimraf dist && npx tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts",
+    "dev": "ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "postbuild": "replace-in-file --config replace.config.json"
   },
   "nodemonConfig": {
-    "watch": ["src"],
+    "watch": [
+      "src"
+    ],
     "ext": "ts,json,js",
     "exec": "npx tsc && node dist/server.js"
   },
@@ -30,6 +33,9 @@
     "@types/node": "^20.12.7",
     "@types/uuid": "^9.0.8",
     "nodemon": "^3.1.0",
+    "replace-in-file": "^6.3.5",
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
 }
