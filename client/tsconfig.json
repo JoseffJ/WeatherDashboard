@@ -1,22 +1,14 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
-
-    /* Deployment settings */
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "outDir": "./dist",             // Output directory for compiled files
-    "rootDir": "./src",             // Source directory for input files
-    "module": "NodeNext",           // Use ES modules (for type: "module")
-    "moduleResolution": "NodeNext", // Must match the 'module' option
-    "target": "ES2020",             // JavaScript target version
-    "esModuleInterop": true,        // Interoperability with CommonJS
-    "strict": true,                 // Enable strict type checking
-    "noEmit": false                 // Allow emitting compiled files
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "strict": true,
+    "resolveJsonModule": true
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
