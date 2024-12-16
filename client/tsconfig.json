@@ -1,14 +1,15 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",      /* Fix: Use Node module resolution */
     "target": "ES2020",
-    "esModuleInterop": true,
-    "strict": true,
-    "resolveJsonModule": true
+    "jsx": "react",                  /* If using React */
+    "lib": ["DOM", "ES2020"]        /* Include DOM and modern JS libraries */
+    
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

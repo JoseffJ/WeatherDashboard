@@ -1,16 +1,14 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",             // Compiled output files go here
-    "rootDir": "./src",             // Input TypeScript files start here
-    "module": "NodeNext",           // Use Node.js ES module compatibility
-    "moduleResolution": "NodeNext", // Match module behavior with 'module'
-    "target": "ES2020",             // Use modern JavaScript (ES2020)
-    "esModuleInterop": true,        // Enable compatibility with CommonJS
-    "resolveJsonModule": true,      // Allow JSON imports
-    "allowSyntheticDefaultImports": true, // Simplify default import handling
-    "strict": true,                 // Enable strict type checking
-    "noEmitOnError": true           // Avoid emitting JS if there are TS errors
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "ESNext",
+    "target": "ES2020",
+    "lib": ["ES2020"],      /* Only include backend-relevant libraries */
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
   },
-  "include": ["src/**/*.ts"],        // Include all .ts files in src
-  "exclude": ["node_modules"]        // Exclude node_modules to speed up compilation
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
