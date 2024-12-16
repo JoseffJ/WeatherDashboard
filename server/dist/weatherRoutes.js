@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
 const router = Router();
-const searchHistoryPath = path.join(__dirname, '../data/searchHistory.json');
+const searchHistoryPath = path.join(__dirname, '../../data/searchHistory.json');
 const apiKey = process.env.API_KEY;
 const apiBaseUrl = process.env.API_BASE_URL || 'https://api.openweathermap.org';
 // Utility to read search history from JSON file
@@ -28,36 +28,32 @@ const writeHistory = async (history) => {
         console.error('Error writing search history:', error);
     }
 };
-// **Routes**
-// GET: Fetch weather data for testing
-router.get('/weather', async (_, res) => {
-    res.status(200).json({ message: 'Weather data endpoint is working!' });
-});
+// **API ROUTES**
 // GET: Retrieve search history
-router.get('/history', async (_, res) => {
+router.get('/history', async (req, res) => {
     try {
         const history = await readHistory();
         res.status(200).json(history);
     }
     catch (error) {
-        console.error('Error fetching search history:', error);
+        console.error('Error retrieving history:', error);
         res.status(500).json({ error: 'Failed to retrieve search history.' });
     }
 });
 // POST: Save a city and fetch its weather data
-router.post('/weather', async (req, res) => {
+router.post('/', async (req, res) => {
     const { cityName } = req.body;
-    if (!cityName || typeof cityName !== 'string') {
-        return res.status(400).json({ error: 'Valid city name is required.' });
+    if (!cityName) {
+        return res.status(400).json({ error: 'City name is required.' });
     }
     try {
         // Fetch weather data
         const weatherUrl = `${apiBaseUrl}/data/2.5/weather?q=${encodeURIComponent(cityName)}&units=imperial&appid=${apiKey}`;
-        const weatherResponse = await fetch(weatherUrl);
-        if (!weatherResponse.ok) {
+        const response = await fetch(weatherUrl);
+        if (!response.ok) {
             throw new Error('Failed to fetch weather data.');
         }
-        const weatherData = await weatherResponse.json();
+        const weatherData = await response.json();
         // Read and update search history
         const history = await readHistory();
         const newCity = {
@@ -73,11 +69,28 @@ router.post('/weather', async (req, res) => {
         };
         history.push(newCity);
         await writeHistory(history);
-        return res.status(201).json(newCity);
+        res.status(201).json(newCity);
     }
     catch (error) {
         console.error('Error handling weather request:', error);
-        return res.status(500).json({ error: 'Failed to fetch weather data.' });
+        res.status(500).json({ error: 'Failed to fetch weather data.' });
+    }
+});
+// DELETE: Remove a city from search history
+router.delete('/history/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const history = await readHistory();
+        const updatedHistory = history.filter((city) => city.id !== id);
+        if (history.length === updatedHistory.length) {
+            return res.status(404).json({ error: 'City not found.' });
+        }
+        await writeHistory(updatedHistory);
+        res.status(200).json({ message: 'City deleted successfully.' });
+    }
+    catch (error) {
+        console.error('Error deleting city:', error);
+        res.status(500).json({ error: 'Failed to delete city.' });
     }
 });
 export default router;
